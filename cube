@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modificar Etiqueta H2 con Firebase</title>
+    <!-- Importa las funciones necesarias de la SDK de Firebase v9 -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.5/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.5/firebase-analytics.js";
+        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/9.6.5/firebase-database.js";
+
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCM0NGb_vgvbXuOLbWNvCPOSX3bqHPr6VY",
+            authDomain: "cubelaberints.firebaseapp.com",
+            projectId: "cubelaberints",
+            storageBucket: "cubelaberints.appspot.com",
+            messagingSenderId: "316755557208",
+            appId: "1:316755557208:web:d35efc279c281f1fbe032d",
+            measurementId: "G-XP911N33DW"
+        };
+
+        // Inicializa Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        
+        // Referencia a la base de datos
+        const db = getDatabase(app);
+
+        // Función para modificar la etiqueta H2 y almacenar en Firebase
+        function modificarEtiqueta() {
+            var nuevoTexto = document.getElementById("inputTexto").value;
+            document.getElementById("miEtiqueta").innerText = nuevoTexto;
+
+            // Guarda el nuevo texto en la base de datos de Firebase
+            set(ref(db, 'etiquetaH2'), {
+                texto: nuevoTexto
+            });
+        }
+
+        // Actualiza la etiqueta H2 al cargar la página
+        window.onload = function() {
+            // Obtiene el valor de la etiqueta H2 desde Firebase
+            get(ref(db, 'etiquetaH2')).then((snapshot) => {
+                var textoFirebase = snapshot.val() ? snapshot.val().texto : null;
+
+                // Si hay un texto almacenado en Firebase, actualiza la etiqueta H2
+                if (textoFirebase) {
+                    document.getElementById("miEtiqueta").innerText = textoFirebase;
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+
+<h2 id="miEtiqueta">Texto predeterminado</h2>
+<input type="text" id="inputTexto" placeholder="Nuevo texto">
+<button onclick="modificarEtiqueta()">Modificar</button>
+
+</body>
+</html>
